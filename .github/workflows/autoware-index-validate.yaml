@@ -1,0 +1,22 @@
+name: autoware-index-validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    uses: autowarefoundation/autoware-index-github-actions/.github/workflows/validate-package.yaml@main
+    with:
+      ros_distro: jazzy
+      package_name: autoware_bluetooth_monitor
+      pull-ccache: ${{ github.event_name != 'push' || github.ref != 'refs/heads/main' }}
+      push-ccache: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      cache-key-element: build
+      concurrency-group: autoware-index-validate-jazzy-${{ github.ref }}

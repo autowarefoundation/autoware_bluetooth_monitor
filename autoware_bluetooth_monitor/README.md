@@ -1,4 +1,4 @@
-# bluetooth_monitor
+# autoware_bluetooth_monitor
 
 ## Description
 
@@ -46,7 +46,14 @@ L2ping is only allowed for root by default, so this package provides the followi
 
 ## Parameters
 
-{{ json_to_markdown("system/autoware_bluetooth_monitor/schema/bluetooth_monitor.schema.json") }}
+| Parameter   | Type         | Default                 | Description                                   |
+| ----------- | ------------ | ----------------------- | --------------------------------------------- |
+| `addresses` | string array | `["4C:B9:9B:6E:7F:9A"]` | Bluetooth addresses of devices to monitor.    |
+| `port`      | integer      | `7640`                  | TCP port of the L2ping service on the host.   |
+| `timeout`   | integer      | `5`                     | Device response timeout in seconds.           |
+| `rtt_warn`  | number       | `0.1`                   | Round-trip time warning threshold in seconds. |
+
+The [parameter schema](schema/bluetooth_monitor.schema.json) defines these defaults. The shipped [parameter file](config/bluetooth_monitor.param.yaml) sets `rtt_warn` to `0.0` to disable the warning.
 
 - `rtt_warn`
   - **0.00(zero)**: Disable checking RTT
@@ -63,13 +70,13 @@ L2ping is only allowed for root by default, so this package provides the followi
 1. Assign capability to `l2ping_service` since L2ping requires `cap_net_raw+eip` capability.
 
    ```sh
-   sudo setcap 'cap_net_raw+eip' ./build/bluetooth_monitor/l2ping_service
+   sudo setcap 'cap_net_raw+eip' "$(readlink -f ./install/autoware_bluetooth_monitor/lib/autoware_bluetooth_monitor/l2ping_service)"
    ```
 
 2. Run `l2ping_service` and `bluetooth_monitor`.
 
    ```sh
-   ./build/bluetooth_monitor/l2ping_service
+   ros2 run autoware_bluetooth_monitor l2ping_service
    ros2 launch autoware_bluetooth_monitor bluetooth_monitor.launch.xml
    ```
 
